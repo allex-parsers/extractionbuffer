@@ -1,0 +1,22 @@
+{
+  "name": "allex_extractionbufferparser",
+  "version": "1.0.0",
+  "description": "AllexJS lib for handling variable length records",
+  "main": "index.js",
+  "scripts": {
+    "test": "allex-mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab.hers.rs:allex_parsers/extractionbuffer.git"
+  },
+  "keywords": [
+    "ecosystem:AllexJS",
+    "variable",
+    "length",
+    "extraction",
+    "buffer"
+  ],
+  "author": "HERS Belgrade",
+  "license": "ISC"
+}
