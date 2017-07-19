@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@gitlab.hers.rs:allex_parsers/extractionbuffer.git"
+    "url": "git@github.com:allex-parsers/extractionbuffer.git"
   },
   "keywords": [
     "ecosystem:AllexJS",
