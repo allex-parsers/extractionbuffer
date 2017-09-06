@@ -44,15 +44,25 @@ function createDoubleBufferWithCursor (execlib) {
   BufferWithCursor.prototype.valueAtCursor = function (offset) {
     return this.buffer[this.cursor + (this.offset||0)];
   };
-  BufferWithCursor.prototype.appendFrom = function (other, howmany) {
-    other.buffer.copy(this.buffer,this.cursor,other.cursor,other.cursor+howmany); 
-  };
   BufferWithCursor.prototype.appendTo = function (other, howmany) {
     if ('undefined' === typeof howmany) {
       howmany = this.chunkLength();
     }
     this.buffer.copy(other.buffer,other.cursor,this.anchor,this.anchor+howmany);
     other.cursor+=howmany;
+  };
+  BufferWithCursor.prototype.prepend = function (other) {
+    var otherremaining = other.remaining();
+    if (otherremaining<1) {
+      return;
+    }
+    if (this.anchor>0) {
+      throw new lib.Error('CANNOT_PREPEND', 'Cannot prepend other BufferWithCursor because my anchor already moved from 0');
+    }
+    //console.log('before', this.buffer.toString('utf8'), 'data, cursor', this.cursor, 'anchor', this.anchor);
+    this.buffer = Buffer.concat([other.buffer.slice(other.anchor), this.buffer]);
+    this.cursor += otherremaining;
+    //console.log('after', this.buffer.toString('utf8'), 'data, cursor', this.cursor, 'anchor', this.anchor);
   };
   BufferWithCursor.prototype.toString = function () {
     return this.buffer.slice(this.cursor).toString();
@@ -79,6 +89,12 @@ function createDoubleBufferWithCursor (execlib) {
   DoubleBufferWithCursor.prototype.purgePrevious = function () {
     if (!this.previous) {
       throw new lib.Error('CANNOT_PURGE_PREVIOUS', 'Previous buffer cannot be purged because it does not exist');
+    }
+    if (this.previous.remaining()) {
+      if (!this.current) {
+        throw new lib.Error('CANNOT_APPEND_PREVIOUS', 'Previous buffer cannot be purged because there is no current to take the data');
+      }
+      this.current.prepend(this.previous);
     }
     this.previous.destroy();
     this.previous = null;
