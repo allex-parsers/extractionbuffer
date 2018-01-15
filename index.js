@@ -139,11 +139,24 @@ function createDoubleBufferWithCursor (execlib) {
     }
   };
   DoubleBufferWithCursor.prototype.finalize = function () {
-    var pending = this.pending;
+    var pending = this.pending,
+      ret,
+      tailff,
+      tailffrec;
     this.pending = null;
     if (pending) {
-      return this.parser.postProcessFileToData(pending);
+      ret = this.parser.postProcessFileToData(pending);
     }
+    tailff = this.tailForFinalize();
+    if (tailff) {
+      tailffrec = this.parser.postProcessFileToData(this.parser.createBuffer(tailff));
+      if (ret) {
+        ret = [ret, tailffrec];
+      } else {
+        ret = tailffrec;
+      }
+    }
+    return ret;
   };
   DoubleBufferWithCursor.prototype.atDelimiter = function () {
     var p = this.previous,
@@ -207,6 +220,31 @@ function createDoubleBufferWithCursor (execlib) {
       this.current.resetAnchor();
       return ret;
     }
+  };
+  DoubleBufferWithCursor.prototype.tailForFinalize = function () {
+    var prevtail = this.tailOf('previous'),
+      currtail = this.tailOf('current');
+    if (prevtail && currtail) {
+      return Buffer.concat([prevtail, currtail]);
+    }
+    if (prevtail) {
+      return prevtail;
+    }
+    if (currtail) {
+      return currtail;
+    }
+    return null;
+  };
+  DoubleBufferWithCursor.prototype.tailOf = function (name) {
+    var tail;
+    if (!this[name]) {
+      return null;
+    }
+    tail = this[name].tail();
+    if (tail && tail.length>0) {
+      return tail;
+    }
+    return null;
   };
 
   return DoubleBufferWithCursor;

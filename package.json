@@ -1,6 +1,6 @@
 {
   "name": "allex_extractionbufferparser",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "AllexJS lib for handling variable length records",
   "main": "index.js",
   "scripts": {
