@@ -3,9 +3,15 @@ function createDoubleBufferWithCursor (execlib) {
 
   var lib = execlib.lib;
 
+  function allocateBuffer (thingy) {
+    if (lib.isNumber(thingy)) {
+      return Buffer.allocUnsafe(thingy);
+    }
+    return Buffer.from(thingy);
+  }
 
   function BufferWithCursor(param) {
-    this.buffer = new Buffer(param);
+    this.buffer = allocateBuffer(param);
     this.cursor = 0;
     this.anchor = 0;
   }
